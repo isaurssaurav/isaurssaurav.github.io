@@ -1,4 +1,4 @@
-document.body.style.zoom = "60%";
+document.body.style.zoom = "65%";
 var tl = anime.timeline({ loop: false, duration: 1000, autoplay: false });
 tl.add({
     targets: '.line-one svg path',
@@ -65,41 +65,66 @@ function createKeyframes(value) {
     return keyframes;
 }
 
-
 let background = anime({
     targets: '.back-poly svg',
     scale: createKeyframes(function (el) {
-        return anime.random(0.5, 0.7)
+        return anime.random(7, 12)
     }),
     translateX: createKeyframes(function (el) {
-        return el.classList.contains('large') ? anime.random(-300, 300) : anime.random(-520, 520);
+        return anime.random(0, 100);
     }),
     translateY: createKeyframes(function (el) {
-        return el.classList.contains('large') ? anime.random(-110, 110) : anime.random(-280, 280);
+        return anime.random(0, 200);
     }),
     easing: 'linear',
     rotate: createKeyframes(function () { return anime.random(-180, 180); }),
     duration: function () {
-        return anime.random(600, 2200);
+        return anime.random(100, 2200);
     },
-    loop: true,
+    loop: false,
     direction: 'alternate',
+    opacity: 0.1,
     autoplay: false
 });
 background.play();
 let workMenu = document.querySelector(".menu .work");
+let pausedValue = {}
 
-workMenu.addEventListener("click", function () {
-    let axis = this.getBoundingClientRect();
-    // debugger;
+workMenu.addEventListener('mouseenter', function () {
     background.pause();
+    pausedValue.scale = background.animations[0].currentValue;
+    pausedValue.translateX = background.animations[1].currentValue;
+    pausedValue.translateY = background.animations[2].currentValue;
+
+    // debugger;
+    let axis = this.getBoundingClientRect();
     anime({
         targets: '.back-poly svg',
-        scale: 0.3,
-        translateX: axis.left,
-        translateY: axis.top,
+        scale: 1,
+        translateX: axis.left - 48,
+        translateY: axis.top - 49,
         easing: 'linear',
-        rotate: createKeyframes(function () { return anime.random(-180, 180); }),
-        duration: 500
+        rotate: 0,
+        duration: 500,
+        opacity: 1
     });
-})
+});
+
+workMenu.addEventListener('mouseleave', function () {
+    anime({
+        targets: '.back-poly svg',
+        scale: pausedValue.scale,
+        translateX: pausedValue.translateX,
+        translateY: pausedValue.translateY,
+        easing: 'easeOutExpo',
+        rotate: 0,
+        duration: 700,
+        opacity: 0.1,
+        complete: function () {
+            background.play();
+        }
+    });
+
+
+
+});
